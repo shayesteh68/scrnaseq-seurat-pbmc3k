@@ -19,8 +19,21 @@ new_cluster_ids <- c(
   "8" = "Platelet"
 )
 
+observed_clusters <- unique(as.character(Idents(pbmc)))
+if (!setequal(observed_clusters, names(new_cluster_ids))) {
+  missing_clusters <- setdiff(observed_clusters, names(new_cluster_ids))
+  unexpected_map <- setdiff(names(new_cluster_ids), observed_clusters)
+  stop(
+    "Cluster IDs differ from the reviewed marker map. Missing labels: ",
+    paste(missing_clusters, collapse = ", "),
+    "; unused map entries: ", paste(unexpected_map, collapse = ", ")
+  )
+}
+dir.create("figures", recursive = TRUE, showWarnings = FALSE)
+dir.create("results", recursive = TRUE, showWarnings = FALSE)
 pbmc <- RenameIdents(pbmc, new_cluster_ids)
 pbmc$cell_type <- Idents(pbmc)
+pbmc$annotation_status <- "provisional_manual_marker_reviewed"
 
 cat("==> Cell count summary per annotated cell type:\n")
 print(table(pbmc$cell_type))
