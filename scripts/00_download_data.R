@@ -5,6 +5,7 @@ archive <- file.path(raw_dir, "pbmc3k_filtered_gene_bc_matrices.tar.gz")
 matrix_root <- file.path(raw_dir, "filtered_gene_bc_matrices")
 dest <- file.path(matrix_root, "hg19")
 url <- "https://s3-us-west-2.amazonaws.com/10x.files/samples/cell/pbmc3k/pbmc3k_filtered_gene_bc_matrices.tar.gz"
+expected_md5 <- "F76D73BF7A582AAF32B798BCAE9574D3"
 dir.create(raw_dir, recursive = TRUE, showWarnings = FALSE)
 options(timeout = max(600, getOption("timeout")))
 
@@ -19,6 +20,12 @@ validate_gzip <- function(path) {
   TRUE
 }
 
+validate_archive <- function(path) {
+  if (!validate_gzip(path)) return(FALSE)
+  observed_md5 <- unname(tools::md5sum(path))
+  identical(toupper(observed_md5), expected_md5)
+}
+
 validate_matrix_dir <- function(path) {
   has_one <- function(stems) any(file.exists(file.path(path, stems)))
   has_one(c("matrix.mtx", "matrix.mtx.gz")) &&
@@ -27,6 +34,10 @@ validate_matrix_dir <- function(path) {
 }
 
 prepare_data <- function() {
+  if (file.exists(archive) && !validate_archive(archive)) {
+    stop("Existing archive failed gzip or MD5 validation; preserve and inspect it: ", archive)
+  }
+
   if (dir.exists(matrix_root)) {
     if (!validate_matrix_dir(dest)) {
       stop("An incomplete matrix directory already exists; inspect it before retrying: ", dest)
@@ -36,14 +47,14 @@ prepare_data <- function() {
   }
 
   if (file.exists(archive)) {
-    if (!validate_gzip(archive)) {
-      stop("Existing archive is not a complete gzip file; preserve and inspect it: ", archive)
-    }
+    message("Existing PBMC3k archive passed gzip and MD5 validation.")
   } else {
     tmp_archive <- paste0(archive, ".part")
     on.exit(if (file.exists(tmp_archive)) unlink(tmp_archive), add = TRUE)
     download.file(url, tmp_archive, mode = "wb", method = "libcurl", quiet = FALSE)
-    if (!validate_gzip(tmp_archive)) stop("Downloaded archive failed full gzip integrity validation.")
+    if (!validate_archive(tmp_archive)) {
+      stop("Downloaded archive failed gzip or expected MD5 validation.")
+    }
     if (!file.rename(tmp_archive, archive)) stop("Could not publish verified archive to ", archive)
   }
 

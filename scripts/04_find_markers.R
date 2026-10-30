@@ -46,13 +46,14 @@ dot_plot <- DotPlot(pbmc, features = top2_genes) +
   ggtitle("PBMC 3k - Top Cluster Specific Markers") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
-ggsave("figures/06_markers_dotplot.png", plot = dot_plot, width = 10, height = 5, dpi = 300)
+ggsave("figures/06_markers_dotplot.png", plot = dot_plot, width = 10, height = 5, dpi = 300, bg = "white")
 
 # Heatmap for top 5 markers
 top5_genes <- top5 %>% pull(gene) %>% unique()
+pbmc <- ScaleData(pbmc, features = top5_genes, verbose = FALSE)
 heatmap_plot <- DoHeatmap(pbmc, features = top5_genes) + 
   theme(text = element_text(size = 9))
 
-ggsave("figures/07_markers_heatmap.png", plot = heatmap_plot, width = 10, height = 8, dpi = 300)
+ggsave("figures/07_markers_heatmap.png", plot = heatmap_plot, width = 10, height = 8, dpi = 300, bg = "white")
 
 cat("==> Biomarker discovery workflow completed successfully!\n")

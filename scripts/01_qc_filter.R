@@ -18,10 +18,10 @@ print(pbmc)
 pbmc[["percent.mt"]] <- PercentageFeatureSet(pbmc, pattern = "^MT-")
 
 qc_vln <- VlnPlot(pbmc, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3, pt.size = 0.1)
-ggsave("figures/01_qc_prefilter_vlnplot.png", qc_vln, width = 10, height = 5, dpi = 300)
+ggsave("figures/01_qc_prefilter_vlnplot.png", qc_vln, width = 10, height = 5, dpi = 300, bg = "white")
 qc_scatter <- FeatureScatter(pbmc, feature1 = "nCount_RNA", feature2 = "percent.mt") +
   FeatureScatter(pbmc, feature1 = "nCount_RNA", feature2 = "nFeature_RNA")
-ggsave("figures/01_qc_scatter.png", qc_scatter, width = 10, height = 5, dpi = 300)
+ggsave("figures/01_qc_scatter.png", qc_scatter, width = 10, height = 5, dpi = 300, bg = "white")
 
 pbmc_filtered <- subset(pbmc, subset = nFeature_RNA > 200 & nFeature_RNA < 2500 & percent.mt < 5)
 saveRDS(pbmc_filtered, "results/qc/pbmc_qc_filtered.rds")
