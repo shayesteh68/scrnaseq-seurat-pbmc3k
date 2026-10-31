@@ -10,6 +10,8 @@ The workflow uses the official 10x Genomics filtered PBMC 3k hg19 matrix:
 
 `scripts/00_download_data.R` validates the compressed archive, checks its expected MD5 (`F76D73BF7A582AAF32B798BCAE9574D3`), rejects unsafe archive paths, and verifies the required matrix, barcode, and feature files before extraction. The raw archive and extracted matrix are ignored by Git and are downloaded locally when needed.
 
+This is an independent workflow case study using 10x Genomics’ standard PBMC3K example, which contains 2,700 cells from one healthy donor. It is not a reanalysis commissioned by, or conducted in collaboration with, a named laboratory or the data provider. See the [10x Cell Ranger PBMC3K summary](https://cf.10xgenomics.com/samples/cell-exp/1.1.0/pbmc3k/pbmc3k_web_summary.html).
+
 ## Environment
 
 The workflow was run on Linux x86_64 under WSL with R 4.4.3, Seurat 5.5.0, and ggplot2 4.0.3. `environment.yml` describes the main dependencies. `environment-linux-64.lock.txt` records the explicit package builds used for the verified Linux run; create that environment with:
